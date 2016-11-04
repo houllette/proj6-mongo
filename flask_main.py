@@ -92,13 +92,9 @@ def database_add():
 def database_delete():
     app.logger.debug("Deleting from Database")
     checked = request.args.get("checked", type=str)
-    memos = get_memos()
-    checked = checked.split(',')
-    for check in checked:
-        if check == '':
-            break
-        removing = memos[int(check)]
-        collection.remove({'date': removing['date'], 'text': removing['text']})
+    remove = database_removal(checked)
+    for memo in remove:
+        collection.remove({'date': memo['date'], 'text': memo['text']})
     rslt = { "key" : "test" }
     return jsonify(result = rslt)
 
@@ -168,6 +164,18 @@ def database_entry(date, memo):
     entry = {"type": "dated_memo", "date": date.isoformat(), "text": memo}
     return entry
 
+def database_removal(checked):
+    """
+    Returns array of memos to be removed
+    """
+    memos = get_memos()
+    checked = checked.split(',')
+    remove = []
+    for check in checked:
+        if check == '':
+            break
+        remove.append(memos[int(check)])
+    return remove
 
 if __name__ == "__main__":
     app.debug=CONFIG.DEBUG
