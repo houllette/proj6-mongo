@@ -1,62 +1,62 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<html> <head>
-<title>Memos</title>
+<html>
+  <head>
+    <title>Memos</title>
 
-  <!-- 'viewport' is used by bootstrap to respond to device size -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 'viewport' is used by bootstrap to respond to device size -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Javascript:  JQuery from a content distribution network (CDN) -->
-  <script
-     src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
-  </script>
+    <!-- Javascript:  JQuery from a content distribution network (CDN) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
-  <!-- Bootstrap includes javascript and css  (must follow jquery) -->
-  <link rel="stylesheet"
-   href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-   <script
-    src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
-</script>
+    <!-- Bootstrap includes javascript and css  (must follow jquery) -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
-   <!-- Our own style sheet -->
-   <link rel="stylesheet" href="/static/css/memos.css" />
-
-
-</head>
-<body>
-<div class="container">
-
-<!-- Flashed messages before content -->
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class=flashes>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-
-<h1>Memos</h1>
-
-{% if g.memos %}
-    {% for memo in g.memos %}
-  <div class="memo">
-  <div class="row">
-  <div class="col-md-2">
-    {{ memo.date | humanize }}
-  </div>
-  <div class="col-md-10">
-    {{ memo.text }}
-  </div>
-  </div> <!-- row -->
-  </div> <!-- memo -->
-  {% endfor %}
-{% else %}
-  <p>No memos for you. </p>  
-{% endif %}
-
- 
-
-</div> <!-- container -->
-</body>
+    <!-- Our own style sheet -->
+    <link rel="stylesheet" href="/static/css/memos.css" />
+  </head>
+  <body>
+    <div class="container">
+      <form name="memos">
+        <button type="submit" id="create" formaction="create">Create Memo</button>
+        <button type="submit" id="delete">Delete Memos</button>
+      </form>
+      <h1>Memos</h1>
+      <form>
+      {% if g.memos %}
+          {% for memo in g.memos %}
+        <div class="memo">
+          <div class="row">
+            <div class="col-md-2">
+              <input type="checkbox"  id='{{loop.index}}'>
+              {{ memo.date | humanize }}
+            </div>
+            <div class="col-md-10">
+              {{ memo.text }}
+            </div>
+          </div> <!-- row -->
+        </div> <!-- memo -->
+        {% endfor %}
+      {% else %}
+        <p>No memos for you. </p>
+      {% endif %}
+      </form>
+      <script>
+        $("#delete").click(function(event) {
+          var checked = "";
+          var all_memos = document.getElementsByTagName('input');
+          for (var i = 0; i<all_memos.length; i++) {
+            if (all_memos[i].checked) {
+              checked += i + ",";
+            }
+          }
+           $.getJSON("/database_delete", { checked: checked },
+             function(data) { }
+           );
+          window.location = '/index';
+        });
+      </script>
+    </div>
+  </body>
 </html>
